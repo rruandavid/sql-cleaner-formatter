@@ -30,6 +30,22 @@ const removeOuterQuotes = (chunk) => {
   return chunk;
 };
 
+const CONNECTOR_ONLY_PATTERN = /^(?:\+|&|\.\.)+$/;
+
+const stripDanglingQuotes = (chunk) => {
+  if (!chunk) return chunk;
+  const first = chunk.at(0);
+  const last = chunk.at(-1);
+  const isQuoteChar = (char) => char === "'" || char === '"';
+  if (isQuoteChar(first) && !isQuoteChar(last)) {
+    return chunk.slice(1);
+  }
+  if (!isQuoteChar(first) && isQuoteChar(last)) {
+    return chunk.slice(0, -1);
+  }
+  return chunk;
+};
+
 const splitFragments = (text) =>
   text
     .split(/\n+/)
@@ -37,63 +53,28 @@ const splitFragments = (text) =>
     .filter(Boolean)
     .map((line) => line.replace(/^(\+|&|\.\.)\s*/, "").replace(/\s*(\+|&|\.\.)$/, ""))
     .map((line) => line.replace(/\s*\/\/.*$/, ""))
-    .map(removeOuterQuotes);
+    .map(removeOuterQuotes)
+    .map(stripDanglingQuotes)
+    .map((line) => line.trim())
+    .filter((line) => {
+      if (!line) return false;
+      const compact = line.replace(/\s+/g, "");
+      return !CONNECTOR_ONLY_PATTERN.test(compact);
+    });
 
 const hasCodeArtifacts = (text) => /(\+|&|\.\.)|#13|#10|\\/.test(text);
-
-const extractQuotedFragments = (text) => {
-  const fragments = [];
-  let buffer = "";
-  let inQuote = false;
-  let quoteChar = "";
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    if (!inQuote) {
-      if (char === "'" || char === '"') {
-        inQuote = true;
-        quoteChar = char;
-      }
-      continue;
-    }
-
-    if (char === quoteChar) {
-      const next = text[i + 1];
-      if (next === quoteChar) {
-        buffer += quoteChar;
-        i += 1;
-      } else {
-        fragments.push(buffer);
-        buffer = "";
-        inQuote = false;
-        quoteChar = "";
-      }
-      continue;
-    }
-
-    buffer += char === "\r" || char === "\n" ? " " : char;
-  }
-
-  if (buffer.trim()) {
-    fragments.push(buffer.trim());
-  }
-
-  return fragments;
-};
 
 const cleanSql = (raw) => {
   if (!raw.trim()) return "";
   const normalized = stripBackslashes(normalizeDelphiBreaks(raw));
-  const literalFragments = extractQuotedFragments(normalized);
-  if (literalFragments.length > 0) {
-    return collapseWhitespace(literalFragments.join(" "));
-  }
-  const fragments = splitFragments(normalized);
-  if (fragments.length === 0 || !hasCodeArtifacts(raw)) {
+  if (!hasCodeArtifacts(raw)) {
     return collapseWhitespace(normalized);
   }
-  const joined = fragments.join(" ");
-  return collapseWhitespace(joined);
+  const fragments = splitFragments(normalized);
+  if (fragments.length === 0) {
+    return collapseWhitespace(normalized);
+  }
+  return collapseWhitespace(fragments.join(" "));
 };
 
 const FORMAT_OPTIONS = Object.freeze({
@@ -226,4 +207,5 @@ resetBtn.addEventListener("click", () => {
   inputEl.focus();
   processSql();
 });
+
 
