@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SQL Cleaner & Formatter</title>
+    <title>Cleaner & Formatter - SQL, XML & JSON</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="stylesheet" href="styles.css" />
     <script src="vendor/sql-formatter.min.js" defer></script>
@@ -14,46 +14,128 @@
       <section class="panel">
         <header class="panel__header">
           <p class="panel__eyebrow">Dev Tools</p>
-          <h1>SQL Cleaner & Formatter</h1>
-          <p class="panel__subtitle">Cole um SQL “sujo”, limpe, formate e copie rapidamente.</p>
+          <h1>Cleaner & Formatter</h1>
+          <p class="panel__subtitle">Limpe e formate SQL, XML e JSON com facilidade e precisão.</p>
         </header>
-        <div class="field">
-          <label for="sqlInput">SQL bruto</label>
-          <textarea
-            id="sqlInput"
-            class="text-input"
-          ></textarea>
+
+        <!-- Sistema de Abas -->
+        <div class="tabs">
+          <button class="tab" data-tab="sql" aria-selected="true">SQL</button>
+          <button class="tab" data-tab="xml" aria-selected="false">XML</button>
+          <button class="tab" data-tab="json" aria-selected="false">JSON</button>
         </div>
-        <div class="controls">
-          <div class="controls__actions">
-            <button id="copyBtn" class="button button--ghost">Copiar SQL</button>
-            <button id="resetBtn" class="button button--outline">Limpar campos</button>
+
+        <!-- Conteúdo SQL -->
+        <div class="tab-content" id="sql-content" data-active="true">
+          <div class="field">
+            <div class="field__header">
+              <label for="sqlInput">SQL bruto</label>
+              <span class="field__stats" id="sqlInputStats">0 linhas • 0 caracteres</span>
+            </div>
+            <textarea id="sqlInput" class="text-input"></textarea>
           </div>
-          <div class="controls__selectors">
-            <label class="style-picker">
-              <span>Estilo</span>
-              <select id="formatStyle">
-                <option value="readable">Legível (padrão)</option>
-                <option value="compact">Compacto</option>
-                <option value="minimal">Sem formatar</option>
-              </select>
-            </label>
-            <label class="style-picker">
-              <span>Case</span>
-              <select id="caseStyle">
-                <option value="normal" selected>Normal</option>
-                <option value="upper">Upper</option>
-                <option value="lower">Lower</option>
-              </select>
-            </label>
+          <div class="controls">
+            <div class="controls__actions">
+              <button id="sqlCopyBtn" class="button button--ghost">Copiar SQL</button>
+              <button id="sqlResetBtn" class="button button--outline">Limpar campos</button>
+            </div>
+            <div class="controls__selectors">
+              <label class="style-picker">
+                <span>Estilo</span>
+                <select id="formatStyle">
+                  <option value="readable">Legível (padrão)</option>
+                  <option value="compact">Compacto</option>
+                  <option value="minimal">Sem formatar</option>
+                </select>
+              </label>
+              <label class="style-picker">
+                <span>Case</span>
+                <select id="caseStyle">
+                  <option value="normal" selected>Normal</option>
+                  <option value="upper">Upper</option>
+                  <option value="lower">Lower</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field__header">
+              <label for="sqlOutput">SQL limpo e formatado</label>
+              <span class="field__stats" id="sqlOutputStats">0 linhas • 0 caracteres</span>
+            </div>
+            <textarea id="sqlOutput" class="text-input text-input--output" readonly></textarea>
           </div>
         </div>
-        <div class="field">
-          <label for="sqlOutput">SQL limpo e formatado</label>
-          <textarea id="sqlOutput" class="text-input text-input--output" readonly></textarea>
+
+        <!-- Conteúdo XML -->
+        <div class="tab-content" id="xml-content" data-active="false">
+          <div class="field">
+            <div class="field__header">
+              <label for="xmlInput">XML bruto</label>
+              <span class="field__stats" id="xmlInputStats">0 linhas • 0 caracteres</span>
+            </div>
+            <textarea id="xmlInput" class="text-input"></textarea>
+          </div>
+          <div class="controls">
+            <div class="controls__actions">
+              <button id="xmlCopyBtn" class="button button--ghost">Copiar XML</button>
+              <button id="xmlResetBtn" class="button button--outline">Limpar campos</button>
+            </div>
+            <div class="controls__selectors">
+              <label class="style-picker">
+                <span>Indentação</span>
+                <select id="xmlIndent">
+                  <option value="2" selected>2 espaços</option>
+                  <option value="4">4 espaços</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field__header">
+              <label for="xmlOutput">XML formatado</label>
+              <span class="field__stats" id="xmlOutputStats">0 linhas • 0 caracteres</span>
+            </div>
+            <textarea id="xmlOutput" class="text-input text-input--output" readonly></textarea>
+          </div>
+        </div>
+
+        <!-- Conteúdo JSON -->
+        <div class="tab-content" id="json-content" data-active="false">
+          <div class="field">
+            <div class="field__header">
+              <label for="jsonInput">JSON bruto</label>
+              <span class="field__stats" id="jsonInputStats">0 linhas • 0 caracteres</span>
+            </div>
+            <textarea id="jsonInput" class="text-input"></textarea>
+          </div>
+          <div class="controls">
+            <div class="controls__actions">
+              <button id="jsonCopyBtn" class="button button--ghost">Copiar JSON</button>
+              <button id="jsonResetBtn" class="button button--outline">Limpar campos</button>
+            </div>
+            <div class="controls__selectors">
+              <label class="style-picker">
+                <span>Formato</span>
+                <select id="jsonFormat">
+                  <option value="formatted" selected>Formatado</option>
+                  <option value="minified">Minificado</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field__header">
+              <label for="jsonOutput">JSON formatado</label>
+              <span class="field__stats" id="jsonOutputStats">0 linhas • 0 caracteres</span>
+            </div>
+            <textarea id="jsonOutput" class="text-input text-input--output" readonly></textarea>
+          </div>
         </div>
       </section>
     </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
   </body>
 </html>
-
